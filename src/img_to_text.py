@@ -15,7 +15,7 @@ from pytesseract import Output
 import numpy as np
 from PIL import Image, ImageSequence
 
-def write_text_to_file(img, filename: str, output_path='../data/text/', page = ''):
+def write_text_to_file(img, filename: str, output_path='./data/text/', page = ''):
     with open(output_path+filename + '.txt', 'a') as outfile:
         print('opening file: ' + output_path + filename + '.txt')
         outfile.write(pytesseract.image_to_string(img))
@@ -36,8 +36,8 @@ def main():
         pass
     else:
         args = sys.argv[1:]
-        IMG_PATH = '../data/images/'
-        OUTPUT_PATH = '../data/text/'
+        IMG_PATH = './data/images/'
+        OUTPUT_PATH = './data/text/'
         for arg in args:
             print('\n')
             img_filename = arg
@@ -52,7 +52,7 @@ def main():
             img = Image.open(IMG_PATH + img_filename)
 
             # write text to file with pytesseract
-            write_text_to_file(img, filename=img_name, output_path='../data/text/', page = img_page)
+            write_text_to_file(img, filename=img_name, output_path='./data/text/', page = img_page)
         print('\nfinished all pages')
 
 if __name__ == "__main__" :

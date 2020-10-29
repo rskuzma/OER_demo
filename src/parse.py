@@ -442,15 +442,15 @@ def get_successive(file, fields):
 ### main
 def main():
     # load text
-    TEXT_PATH = '../data/text/'
-    OUTPUT_PATH = '../data/output/'
+    TEXT_PATH = './data/text/'
+    OUTPUT_PATH = './data/output/'
     txt_filename= str(sys.argv[1])
     txt_name = txt_filename[0:txt_filename.index('.')]
     print('reading: ' + txt_filename)
     print('from: ' + TEXT_PATH)
     print('name: ' + txt_name + '\n')
 
-    fields = make_dict('../data/', 'dict_keys.txt')
+    fields = make_dict('./data/', 'dict_keys.txt')
     # pp.pprint(fields, sort_dicts = False)
 
     with open(TEXT_PATH + txt_filename) as file:

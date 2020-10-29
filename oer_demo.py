@@ -1,177 +1,185 @@
 
 ### Imports
+from enum import Enum
+from io import BytesIO, StringIO
+from typing import Union
+
+import os, sys, json
+
 import pandas as pd
-import numpy as np
 import streamlit as st
 
+from PIL import Image
 
-### functions
-# def load_df():
-#     ### load df
-#     CLEAN_DATA_PATH = './data/cleaned/'
-#     df_filename = 'monster_jobs_df_with_topics.pkl'
-#     with open(CLEAN_DATA_PATH+df_filename, 'rb') as f:
-#         df = pickle.load(f)
-#     return df
-#
-# def load_topic_words():
-#     ### load df
-#     CLEAN_DATA_PATH = './data/cleaned/'
-#     topic_words_filename = '20_topics_100_words_each.pkl'
-#     with open(CLEAN_DATA_PATH+topic_words_filename, 'rb') as f:
-#         topic_words = pickle.load(f)
-#     return topic_words
-#
-# def load_d2v_model():
-#     ### load d2v model for comparision
-#     MODEL_PATH = './models/'
-#     model_name = 'd2v_dm_0_vecsize_100_epochs_100.model'
-#     model = Doc2Vec.load(MODEL_PATH + model_name)
-#     return model
-#
-# def load_LDA_model():
-#     MODEL_PATH = './models/'
-#     model_name = 'LDA_20_topics.model'
-#     model = LdaModel.load(MODEL_PATH+model_name)
-#     return model
-#
-# def print_job_info(num):
-#
-#     st.write('Job id: {}'.format(df.iloc[num]['id']))
-#     st.write('Job title: {}'.format(df.iloc[num]['job_title']))
-#     st.write('Company: {}'.format(df.iloc[num]['organization']))
-#     st.write('Job type: {}'.format(df.iloc[num]['job_type']))
-#     st.write('Sector: {}'.format(df.iloc[num]['sector']))
-#     st.write('Location: {}'.format(df.iloc[num]['location']))
-#
-#     st.write('\nDescription: \n{}'.format(df.iloc[num]['job_description']) + '\n')
-#
-# def predict_jobs(model, df, text, topn=20):
-#     """
-#     Predict similar jobs (held in dataframe) to new job (text input) using d2v model
-#     Converts string text into list, then uses infer_vector method to create infer_vector
-#     Uses cosine similarity for comparison
-#     """
-#     # print("\nSearching for matches for the following document: \n{}".format(text))
-#     pick_words = [word for word in simple_preprocess(str(text), deacc=True) if word not in STOPWORDS]
-#     pick_vec = model.infer_vector(pick_words, epochs=100, alpha=0.025)
-#     similars = model.docvecs.most_similar(positive=[pick_vec], topn=topn)
-#
-#     print('\n'*4)
-#     print_similars(similars)
-#
-# def print_similars(similars):
-#     st.write('\n'*4)
-#     count = 1
-#     for i in similars:
-#         st.write('\n')
-#         st.write('\n')
-#         st.write('\n')
-#         st.write('**Similar job number: {}**'.format(count))
-#         st.write('\n')
-#         count += 1
-#         st.write('Job ID ', i[0], ' Similarity Score: ', i[1])
-#         st.write('\n')
-#
-#         print_job_info(i[0])
-#
-# def get_doc_topics(document_string: str, model):
-#     doc_string = [document_string]
-#     doc_cleaned = ph.full_clean(doc_string)
-#     doc_dict = ph.make_dict(doc_cleaned)
-#     doc_bow = ph.make_bow(doc_cleaned, doc_dict)
-#     doc_lda = model[doc_bow]
-#
-#     # only one document means only one element, a list of tuples with (topic, probability)
-#     for topic in doc_lda:
-#         # list of tuples
-#         doc_topics = topic
-#         # there should only be one list, so break
-#         break
-#
-#     # sort in descending order
-#     return doc_topics
-#
-#
-# def show_skills_and_words(top_skills: int, skill_list: list):
-#     # skill_list is a a list of tuples
-#     skill_list = sorted(skill_list, reverse=True, key=lambda x: x[1])
-#     if top_skills > len(skill_list):
-#         top_skills = len(skill_list)
-#     for i in range(top_skills):
-#         skill = skill_list[i][0]
-#         score = skill_list[i][1]
-#         st.write('Skill #{}:'.format(i+1))
-#         st.write('Topic Grouping: {}  Score: {}'.format(skill, score))
-#         st.write('Skill words: {}'.format(topic_words[skill]))
-#         st.write(" ")
-#         st.write(" ")
-#
-#
-# def section_separator():
-#     st.write(" ")
-#     st.write(" ")
-#     st.write(" ")
-#     st.write("-"*50)
-#     st.write(" ")
-#     st.write(" ")
-#     st.write(" ")
-#
-# def load_from_txt(selection, pdf=False):
-#     TXT_RAW_PATH = './data/raw/txt/'
-#     if pdf == True:
-#         TXT_RAW_PATH = './data/raw/pdf/txt_of_pdf/'
-#     with open(TXT_RAW_PATH + selection + '.txt', 'r') as f:
-#         # text_lookup_res = f.read().replace('\n', ' ')
-#         text_lookup_res = f.read()
-#     return text_lookup_res
-#
-# def pdf_to_text(selection):
-#     PDF_RAW_PATH = './data/raw/pdf/'
-#     TO_TXT_PATH = './data/raw/pdf/txt_of_pdf/'
-#
-#     temp = ''
-#     with pdfplumber.open(PDF_RAW_PATH + selection + '.pdf') as pdf:
-#         with open(TO_TXT_PATH + selection + '.txt', 'w') as write_to:
-#             for i in pdf.pages:
-#                 temp = i.extract_text()
-#                 write_to.write(temp + '\n')
-#
-# def uploaded_pdf_to_text(uploaded_file):
-#     doc = []
-#     pdf = pdfplumber.load(uploaded_file)
-#     for page in pdf.pages:
-#         doc.append(page.extract_text())
-#     text_lookup_res = '\n'.join(doc)
-#     return text_lookup_res
+sys.path.append(os.path.join('./data/images/'))
+sys.path.append(os.path.join('./src/'))
+import parse
+import binarize_images
+import img_to_text
 
-
-
-
-##########################################################
-
-
-
-
-"""
-# OER Image to Text Demo
-Richard Kuzma, 1OCT2020
+STYLE = """
+<style>
+img {
+    max-width: 100%;
+}
+</style>
 """
 
-"""
-* Question 1: Given an image (.tiff, .jpg, .png) of an OER can we extract text?
-"""
+FILE_TYPES = ["png", "jpg", "tiff"]
+
+
+class FileType(Enum):
+    """Used to distinguish between file types"""
+
+    IMAGE = "Image"
+    CSV = "csv"
+    PYTHON = "Python"
+
+
+def get_file_type(file: Union[BytesIO, StringIO]) -> FileType:
+    """The file uploader widget does not provide information on the type of file uploaded so we have
+    to guess using rules or ML
+
+    I've implemented rules for now :-)
+
+    Arguments:
+        file {Union[BytesIO, StringIO]} -- The file uploaded
+
+    Returns:
+        FileType -- A best guess of the file type
+    """
+
+    if isinstance(file, BytesIO):
+        return FileType.IMAGE
+    content = file.getvalue()
+    if (
+        content.startswith('"""')
+        or "import" in content
+        or "from " in content
+        or "def " in content
+        or "class " in content
+        or "print(" in content
+    ):
+        return FileType.PYTHON
+
+    return FileType.CSV
+
+
 def main():
-    FILE_TYPES = ['tiff', 'png', 'jpg']
-    uploaded_file = st.file_uploader("Please upload your OER", type=FILE_TYPES)
-    show_file = st.empty()
-    if not file:
-        show_file.info("Please upload a file of type: " + ", ".join(FILE_TYPES))
+    st.write(os.getcwd())
+    st.write('# OER image to text')
+    # st.info(__doc__)
+    st.markdown(STYLE, unsafe_allow_html=True)
+
+    last_name_input = st.text_input("Enter your last name")
+    if not last_name_input:
+        st.warning('Please type last name and hit enter')
+
+    threshold_input = st.number_input("Enter threshold for binarizing images [0, 255]", min_value=0, max_value=255, value=150)
+
+
+    page1 = st.file_uploader("Upload OER page 1", type=FILE_TYPES)
+    page2 = st.file_uploader("Upload OER page 2", type=FILE_TYPES)
+    show_page1 = st.empty()
+    show_page2 = st.empty()
+
+
+    if not page1:
+        show_page1.info("Please OER page 1 of type: " + ", ".join(FILE_TYPES))
         return
-    else:
-        show_file.image(file)
+    if not page2:
+        show_page2.info("Please upload OER page 2 of type: " + ", ".join(FILE_TYPES))
+        return
+    # get data from images
 
 
+
+    # once both files uploaded
+    if page1 and page2:
+        show_page1.image(page1.read())
+        show_page2.image(page2.read())
+        # get names and extensions
+        input1_filename = page1.name
+        input1_ext = input1_filename[input1_filename.rindex('.')+1:]
+        input2_filename = page2.name
+        input2_ext = input2_filename[input2_filename.rindex('.')+1:]
+
+        last_name = last_name_input.lower()
+
+        # images new file names
+        filename_page_1 = last_name + '_page1.' + input1_ext
+        filename_page_2 = last_name + '_page2.' + input2_ext
+
+        # binarized images new file names
+        filename_bin_page_1 = last_name + '_bin_' + str(threshold_input) + '_page1.' + input1_ext
+        filename_bin_page_2 = last_name + '_bin_' + str(threshold_input) + '_page2.' + input2_ext
+            # filename_bin_page_1=$name$bin$thresh$page1$extension
+            # filename_bin_page_2=$name$bin$thresh$page2$extension
+
+        # txt filename
+        txt_filename = last_name + '_bin_' + str(threshold_input) + '.txt'
+            #txt_filename=$name$bin$thresh$txt
+
+        # json file name
+        json_filename = last_name + '_bin_' + str(threshold_input) + '.json'
+
+        # open and save images to file structure
+        page1_img = Image.open(page1)
+        page2_img = Image.open(page2)
+
+        SAVE_PATH = './data/images/'
+
+        page1_img.save(SAVE_PATH + filename_page_1)
+        page1_img.save(SAVE_PATH + filename_page_2)
+
+
+
+        # page1.close()
+        # page2.close()
+        # if show:
+        #     page_1_image_show = Image.open(SAVE_PATH + filename_page_1)
+        #     page_2_image_show = Image.open(SAVE_PATH + filename_page_1)
+        #     show_page1.image(page_1_image_show)
+        #     show_page2.image(page_2_image_show)
+        #     # show_page1.image(page1.read())
+        #     # show_page2.image(page2.read())
+
+        ### binarize
+        with st.spinner('Preprocessing OER image'):
+            sys.argv = ["binarize_images.py", str(threshold_input), filename_page_1, filename_page_2]
+            # os.system('python binarize_images 150' + page1_name + ' ' + page2_name)
+            binarize_images.main()
+
+
+        ### img to text
+        with st.spinner('Reading text from image...'):
+            sys.argv = ["img_to_text.py", filename_bin_page_1, filename_bin_page_2]
+            img_to_text.main()
+
+        ### parse
+        with st.spinner('Converting text to machine-readable format...'):
+            sys.argv = ["parse.py", txt_filename, filename_bin_page_2]
+            parse.main()
+        st.success('Conversion complete!')
+
+
+        st.write('## Output')
+
+        with open('./data/output/' + json_filename, 'r') as f:
+            output = json.load(f)
+        st.write(output)
+
+
+
+
+
+
+
+
+
+
+
+main()
 
 
 #     if uploaded_file == None:

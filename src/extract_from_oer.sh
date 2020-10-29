@@ -1,6 +1,7 @@
 #! /bin/bash
 filename="$1"
 thresh="$2"
+
 name=${filename%.*}
 extension=${filename##*.}
 page1="_page1."

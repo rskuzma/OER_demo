@@ -60,8 +60,8 @@ def main():
 
 
     args = sys.argv[2:]
-    IMG_PATH = '../data/images/'
-    OUTPUT_PATH = '../data/outputs/'
+    IMG_PATH = './data/images/'
+    OUTPUT_PATH = './data/outputs/'
     for arg in args:
         print('\n')
         img_filename= arg
