@@ -1,0 +1,9 @@
+# so we don't accidentally post PII to the internet
+
+/data/images/*.tiff
+/data/images/*.jpg
+/data/images/*.png
+/data/output/*.json
+/data/text/*.txt
+*.DS_Store
+env/*
