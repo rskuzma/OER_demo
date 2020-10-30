@@ -17,7 +17,7 @@ from PIL import Image, ImageSequence
 # pytesseract.pytesseract.tesseract_cmd = r'/usr/local/Cellar/tesseract/4.1.1/bin/tesseract'
 
 # for heroku deployment (also going to add to oer_demo.py)
-pytesseract.pytesseract.tesseract_cmd = ‘/app/.apt/usr/bin/tesseract’
+pytesseract.pytesseract.tesseract_cmd = '/app/.apt/usr/bin/tesseract'
 
 from pytesseract import Output
 
