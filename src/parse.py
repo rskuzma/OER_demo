@@ -407,11 +407,11 @@ def get_sr_total(file, fields):
     return fields
 
 def get_sr_comments(file, fields):
-    # print('get_sr_comments')
+    print('get_sr_comments')
     SR_CMT = ''
     for line in file:
         if 'COMMENTS ON POTENTIAL' in line:
-            # print('line: ' + line)
+            print('line: ' + line)
             next = file.readline()
             # print('next: ' + next)
             while next.isspace():
@@ -428,7 +428,7 @@ def get_sr_comments(file, fields):
 def get_successive(file, fields):
     # print('get_successive')
     for line in file:
-        if 'SUCCESSIVE' in line:
+        if 'which this Officer' in line:
             # print('line: ' + line)
             next = file.readline()
             while next.isspace():
@@ -479,8 +479,10 @@ def main():
         # ^ assumes RATER_RATED is 'Ratings this Officer'
         fields = get_sr_rating(file, fields)
         fields = get_sr_total(file, fields)
-        fields = get_sr_comments(file, fields)
+        # fields = get_sr_comments(file, fields)
         fields = get_successive(file, fields)
+
+
 
     with open(OUTPUT_PATH+txt_name + '.json', 'w') as f:
         json.dump(fields, f, indent=4)

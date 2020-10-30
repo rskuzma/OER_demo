@@ -130,7 +130,7 @@ def main():
         SAVE_PATH = './data/images/'
 
         page1_img.save(SAVE_PATH + filename_page_1)
-        page1_img.save(SAVE_PATH + filename_page_2)
+        page2_img.save(SAVE_PATH + filename_page_2)
 
 
 
