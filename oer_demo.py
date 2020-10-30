@@ -9,7 +9,7 @@ import streamlit as st
 from PIL import Image
 
 # for heroku (also going to add to oer_demo.py)
-pytesseract.pytesseract.tesseract_cmd = '/app/.apt/usr/bin/tesseract'
+# pytesseract.pytesseract.tesseract_cmd = '/app/.apt/usr/bin/tesseract'
 
 # .py files
 sys.path.append(os.path.join('./data/images/'))
