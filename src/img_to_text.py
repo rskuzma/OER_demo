@@ -6,14 +6,23 @@
 # python -m ipykernel install --user --name ENVNAM --display-name "WHAT DISPLAYS IN JUPYTER NOTEBOOK KERNEL SELECTION"
 
 import os, sys
-sys.path.append('/usr/local/Cellar/tesseract/4.1.1/bin/')
-# # tesseract must be in your PATH or include this line with path to tesseract
-# pytesseract.pytesseract.tesseract_cmd = r'/usr/local/Cellar/tesseract/4.1.1/bin/tesseract'
 import cv2
 import pytesseract
-from pytesseract import Output
 import numpy as np
 from PIL import Image, ImageSequence
+
+### tesseract must be in your PATH or teseseract_cmd needs a path to it
+# # if using on local machine
+# sys.path.append('/usr/local/Cellar/tesseract/4.1.1/bin/')
+# pytesseract.pytesseract.tesseract_cmd = r'/usr/local/Cellar/tesseract/4.1.1/bin/tesseract'
+
+# for heroku deployment (also going to add to oer_demo.py)
+pytesseract.pytesseract.tesseract_cmd = ‘/app/.apt/usr/bin/tesseract’
+
+from pytesseract import Output
+
+
+
 
 def write_text_to_file(img, filename: str, output_path='./data/text/', page = ''):
     with open(output_path+filename + '.txt', 'a') as outfile:

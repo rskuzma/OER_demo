@@ -3,14 +3,15 @@
 from enum import Enum
 from io import BytesIO, StringIO
 from typing import Union
-
 import os, sys, json
-
 import pandas as pd
 import streamlit as st
-
 from PIL import Image
 
+# for heroku (also going to add to oer_demo.py)
+pytesseract.pytesseract.tesseract_cmd = ‘/app/.apt/usr/bin/tesseract’
+
+# .py files
 sys.path.append(os.path.join('./data/images/'))
 sys.path.append(os.path.join('./src/'))
 import parse
