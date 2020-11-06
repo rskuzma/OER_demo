@@ -14,6 +14,7 @@ import pytesseract
 from pytesseract import Output
 import numpy as np
 from PIL import Image, ImageSequence
+from io import BytesIO
 
 
 def binarize(image_to_transform, threshold):
@@ -60,8 +61,14 @@ def main():
 
 
     args = sys.argv[2:]
+    # streamlit
     IMG_PATH = './data/images/'
     OUTPUT_PATH = './data/outputs/'
+
+    # local
+    # IMG_PATH = '../data/images/'
+    # OUTPUT_PATH = '../data/outputs/'
+
     for arg in args:
         print('\n')
         img_filename= arg
@@ -70,18 +77,29 @@ def main():
         img_ext = img_filename[img_filename.rindex('.'):]
         img = Image.open(IMG_PATH + img_filename)
 
+
         print('reading: ' + img_filename)
         print('from: ' + IMG_PATH)
         print('name: ' + img_name)
         print('page: ' + img_page)
         print('ext: ' + img_ext)
         print("Binarizing... Thresh = " + str(thresh))
+        #
+        #
+        # bin = binarize(img, thresh)
+        # print('binarized path = ' + IMG_PATH + img_name + '_bin_' + str(thresh) + '_' + img_page + img_ext))
+        # bin.save(IMG_PATH + img_name + '_bin_' + str(thresh) + '_' + img_page + img_ext)
+        # print('img binarized.')
 
 
-        bin = binarize(img, thresh)
-        bin.save(IMG_PATH + img_name + '_bin_' + str(thresh) + '_' + img_page + img_ext)
-        print('img binarized.')
 
+        TempIO = BytesIO()
+        img.save(TempIO, format="JPEG")
+        changed_img = Image.open(BytesIO(TempIO.getvalue()))
+        bin = binarize(changed_img, thresh)
+        print('binarized path = ' + IMG_PATH + img_name + '_bin_' + str(thresh) + '_' + img_page + img_ext)
+        bin.save(IMG_PATH + img_name + '_bin_' + str(thresh) + '_' + img_page + '.jpeg')
+        print('img binarized as jpeg')
 
 if __name__ == "__main__" :
     main()
