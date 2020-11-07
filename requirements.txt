@@ -6,3 +6,5 @@ pytesseract==0.3.6
 requests==2.24.0
 streamlit==0.69.2
 python-dateutil==2.8.0
+pdfplumber==0.5.24
+PyPDF2==1.26.0
