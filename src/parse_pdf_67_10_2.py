@@ -377,7 +377,7 @@ def get_phys_fitness_tx_broadening_operational(file, fields):
                 # print('=====found broadening')
                 temp = file.readline()
                 print('temp1: ' + temp)
-                BRDING_match = re.search(r"\w.*;|, \w.*;|, \w.*", temp)
+                BRDING_match = re.search(r".*(;|,).*(;|,).*", temp)
                 if BRDING_match:
                     fields['BRDING'] = BRDING_match.group()
                 temp = file.readline()
@@ -385,7 +385,7 @@ def get_phys_fitness_tx_broadening_operational(file, fields):
                 if 'OPERATIONAL' in temp:
                     # print('=====found operational')
                     temp = file.readline()
-                    OPERAT = re.search(r"\w.*;|, \w.*;|, \w.*", temp).group()
+                    OPERAT = re.search(r".*(;|,).*(;|,).*", temp).group()
                     fields['OPERAT'] = OPERAT
             if not PHYS_FITNESS_TX == "":
                 fields['PHYS_FITNESS_TX'] = PHYS_FITNESS_TX

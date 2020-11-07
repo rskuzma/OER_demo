@@ -26,7 +26,7 @@ import parse_pdf_67_10_1
 import parse_pdf_67_10_2
 import pdf_to_text
 # import parse_tiff_67_9_2011
-import binarize_images
+# import binarize_images
 # import img_to_text
 # import remove_whitespace
 

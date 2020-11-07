@@ -410,7 +410,7 @@ def get_rt_comments(file, fields):
                 # print('while next.isspace()')
                 next = file.readline()
             count = 0
-            while not 'UNCLASSIFIED' in next:
+            while not 'FORM' or 'UNCLASSIFIED' in next:
                 if count == 5:
                     print('hard count == 5')
                     break
@@ -420,7 +420,6 @@ def get_rt_comments(file, fields):
                 # print('RT_CMT: ' + RT_CMT)
                 next = file.readline()
                 count +=1
-
 
             fields['RT_CMT'] = RT_CMT
             break
