@@ -8,9 +8,9 @@ import pandas as pd
 import streamlit as st
 from PIL import Image, ImageSequence
 # import pypdf2
-from pdf2image import convert_from_path, convert_from_bytes
-# will need poppler installed for pdf2image to work
-sys.path.append(os.path.join('/usr/local/Cellar/poppler/'))
+# from pdf2image import convert_from_path, convert_from_bytes
+# # will need poppler installed for pdf2image to work
+# sys.path.append(os.path.join('/usr/local/Cellar/poppler/'))
 
 # for local
 # sys.path.append('/usr/local/Cellar/tesseract/4.1.1/bin/')
@@ -25,10 +25,10 @@ sys.path.append(os.path.join('./src/'))
 import parse_pdf_67_10_1
 import parse_pdf_67_10_2
 import pdf_to_text
-import parse_tiff_67_9_2011
+# import parse_tiff_67_9_2011
 import binarize_images
-import img_to_text
-import remove_whitespace
+# import img_to_text
+# import remove_whitespace
 
 
 STYLE = """
@@ -205,72 +205,72 @@ def main():
             st.write(output)
 
 ###################################################
-    elif upload_type == 'Pre-2014 (Company Grade) (DA Form 67-9)':
-        upload = st.file_uploader("Upload 2 page tif", type=["tiff", "tif", "jpeg"])
-        if not upload:
-            warning.info("Please upload 2 pg .tiff file")
-        if upload:
-            upload_full_name = upload.name
-            upload_name = upload_full_name[:upload_full_name.rindex('.')]
-            ext = upload_full_name[upload_full_name.rindex('.'):]
-            bin_filename = last_name + '.bin'
-            txt_filename = last_name + '.txt'
-            stripped_txt_filename = last_name + '_stripped.txt'
-            json_filename = last_name + '.json'
-
-            st.write('upload full name: ' + upload_full_name)
-            st.write('name: ' + upload_name)
-            st.write('extension: ' + ext)
-            st.write('upload type: {}'.format(type(upload)))
-            st.write('upload.read() type: {}'.format(type(upload.read())))
-
-            # split the image
-            img = Image.open(upload)
-            st.write('img is type: {}'.format(type(img)))
-            for i, page in enumerate(ImageSequence.Iterator(img)):
-                temp = IMG_PATH + last_name + "_page{}".format(i+1) + ext
-                st.write('path: ' + temp)
-                page.save(temp)
-                st.write('check for save on page {}'.format(i+1))
-
-
-            filename_page_1 = last_name + '_page1' + ext
-            filename_page_2 = last_name + '_page2' + ext
-            st.write('filenames: ' + filename_page_1 + ' and ' + filename_page_2)
-
-            # binarized images new file names
-            filename_bin_page_1 = last_name + '_bin_' + thresh + '_page1' + ext
-            filename_bin_page_2 = last_name + '_bin_' + thresh + '_page2' + ext
-            st.write('bin filenames: ' + filename_bin_page_1 + ' and ' + filename_bin_page_2)
-
-
-            with st.spinner('Preprocessing OER image'):
-                sys.argv = ["binarize_images.py", thresh, filename_page_1, filename_page_2]
-                # os.system('python binarize_images 150' + page1_name + ' ' + page2_name)
-                binarize_images.main()
-
-            ### img to text
-            with st.spinner('Reading text from image...'):
-                sys.argv = ["img_to_text.py", filename_bin_page_1, filename_bin_page_2]
-                img_to_text.main()
-
-            ### remove whitespace
-            with st.spinner('Removing whitespace from txt file...'):
-                sys.argv = ["remove_whitespace.py", txt_filename]
-                remove_whitespace.main()
-            st.success('Whitespace removed!')
-
-            ### parse
-            with st.spinner('Converting text to machine-readable format...'):
-                sys.argv = ["parse_tiff_67_9_2011.py", stripped_txt_filename]
-                parse_tiff_67_9_2011.main()
-            st.success('Conversion complete!')
-
-            ### display output
-            st.write('## Output')
-            with open('./data/output/' + json_filename, 'r') as f:
-                output = json.load(f)
-            st.write(output)
+    # elif upload_type == 'Pre-2014 (Company Grade) (DA Form 67-9)':
+    #     upload = st.file_uploader("Upload 2 page tif", type=["tiff", "tif", "jpeg"])
+    #     if not upload:
+    #         warning.info("Please upload 2 pg .tiff file")
+    #     if upload:
+    #         upload_full_name = upload.name
+    #         upload_name = upload_full_name[:upload_full_name.rindex('.')]
+    #         ext = upload_full_name[upload_full_name.rindex('.'):]
+    #         bin_filename = last_name + '.bin'
+    #         txt_filename = last_name + '.txt'
+    #         stripped_txt_filename = last_name + '_stripped.txt'
+    #         json_filename = last_name + '.json'
+    #
+    #         st.write('upload full name: ' + upload_full_name)
+    #         st.write('name: ' + upload_name)
+    #         st.write('extension: ' + ext)
+    #         st.write('upload type: {}'.format(type(upload)))
+    #         st.write('upload.read() type: {}'.format(type(upload.read())))
+    #
+    #         # split the image
+    #         img = Image.open(upload)
+    #         st.write('img is type: {}'.format(type(img)))
+    #         for i, page in enumerate(ImageSequence.Iterator(img)):
+    #             temp = IMG_PATH + last_name + "_page{}".format(i+1) + ext
+    #             st.write('path: ' + temp)
+    #             page.save(temp)
+    #             st.write('check for save on page {}'.format(i+1))
+    #
+    #
+    #         filename_page_1 = last_name + '_page1' + ext
+    #         filename_page_2 = last_name + '_page2' + ext
+    #         st.write('filenames: ' + filename_page_1 + ' and ' + filename_page_2)
+    #
+    #         # binarized images new file names
+    #         filename_bin_page_1 = last_name + '_bin_' + thresh + '_page1' + ext
+    #         filename_bin_page_2 = last_name + '_bin_' + thresh + '_page2' + ext
+    #         st.write('bin filenames: ' + filename_bin_page_1 + ' and ' + filename_bin_page_2)
+    #
+    #
+    #         with st.spinner('Preprocessing OER image'):
+    #             sys.argv = ["binarize_images.py", thresh, filename_page_1, filename_page_2]
+    #             # os.system('python binarize_images 150' + page1_name + ' ' + page2_name)
+    #             binarize_images.main()
+    #
+    #         ### img to text
+    #         with st.spinner('Reading text from image...'):
+    #             sys.argv = ["img_to_text.py", filename_bin_page_1, filename_bin_page_2]
+    #             img_to_text.main()
+    #
+    #         ### remove whitespace
+    #         with st.spinner('Removing whitespace from txt file...'):
+    #             sys.argv = ["remove_whitespace.py", txt_filename]
+    #             remove_whitespace.main()
+    #         st.success('Whitespace removed!')
+    #
+    #         ### parse
+    #         with st.spinner('Converting text to machine-readable format...'):
+    #             sys.argv = ["parse_tiff_67_9_2011.py", stripped_txt_filename]
+    #             parse_tiff_67_9_2011.main()
+    #         st.success('Conversion complete!')
+    #
+    #         ### display output
+    #         st.write('## Output')
+    #         with open('./data/output/' + json_filename, 'r') as f:
+    #             output = json.load(f)
+    #         st.write(output)
 
 #########################
 
