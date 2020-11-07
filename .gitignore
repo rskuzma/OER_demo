@@ -5,5 +5,7 @@
 /data/images/*.png
 /data/output/*.json
 /data/text/*.txt
+/data/pdf/*.bin
+/data/pdf/*.pdf
 *.DS_Store
 env/*
