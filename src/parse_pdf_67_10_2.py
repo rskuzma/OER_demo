@@ -64,15 +64,15 @@ def get_unit_uic_reason(file, fields):
             # print('temp: '+ temp)
             EVAL_RPT_RSN_CD_match = re.search(r"\d+.?\|.?\w*.*", temp)
             EVAL_RPT_RSN_CD = EVAL_RPT_RSN_CD_match.group().replace('\n', '')
-            print('EVAL_RPT_RSN_CD: ' + EVAL_RPT_RSN_CD)
+            # print('EVAL_RPT_RSN_CD: ' + EVAL_RPT_RSN_CD)
 
             temp = temp[:EVAL_RPT_RSN_CD_match.start()]
-            print('temp: ' + temp)
+            # print('temp: ' + temp)
             UIC_CD = re.findall(r"\b\w{6}\b", temp)[-1]
-            print('UIC_CD: ' + UIC_CD)
+            # print('UIC_CD: ' + UIC_CD)
 
             UNIT = temp[:temp.index(UIC_CD)]
-            print('UNIT: ' + UNIT)
+            # print('UNIT: ' + UNIT)
 
             fields['UNIT'] = UNIT
             fields['UIC_CD'] = UIC_CD
@@ -85,7 +85,7 @@ def get_times_months_enclosures_email(file, fields):
     print('get_times')
     for line in file:
         # print(line)
-        t = re.search(r"THRU\(YYYYMMDD\)", line)
+        t = re.search(r"THRU.?\(YYYYMMDD\)", line)
         if t:
             # print('found t. line: ' + line)
             temp = file.readline()
@@ -106,7 +106,7 @@ def get_times_months_enclosures_email(file, fields):
 
             temp = temp[MNTHS_match.end():]
             # print('new temp: '+temp)
-            GOVT_EMAIL_ADDR_TX_match = re.search(r"\w\w.*.mil", temp)
+            GOVT_EMAIL_ADDR_TX_match = re.search(r"\w\w.*.mil", temp, re.IGNORECASE)
             GOVT_EMAIL_ADDR_TX = GOVT_EMAIL_ADDR_TX_match.group(0).replace(" ", '')
             temp = temp[:GOVT_EMAIL_ADDR_TX_match.start()]
             # print('new temp: '+temp)
@@ -166,12 +166,12 @@ def get_rater_email(file, fields):
         if t:
             temp = file.readline()
             # print('temp: ' + temp)
-            right_line = re.search(r"\w\w.*.mil", temp)
+            right_line = re.search(r"\w\w.*.mil", temp, re.IGNORECASE)
             while right_line == None:
                 # print('not right line. reading temp again...')
                 temp = file.readline()
-                # print('new temp: ' + temp)
-                right_line = re.search(r"\w\w.*.mil", temp)
+                print('new temp: ' + temp)
+                right_line = re.search(r"\w\w.*.mil", temp, re.IGNORECASE)
                 if 'NAME OF INTERMEDIATE RATER' in temp:
                     print('cannot find rater email')
                     break
@@ -226,12 +226,12 @@ def get_senior_rater_info2(file, fields):
             SENIOR_BRNCH = t.group(2)
             fields['SENIOR_BRNCH'] = SENIOR_BRNCH
             fields['SENIOR_ORG'] = SENIOR_ORG
-            email = re.search(r"(\w*\..*.mil)", line)
+            email = re.search(r"(\w*\..*.mil)", line, re.IGNORECASE)
             # print('looked for email in: ' + line)
 
             while not email:
                 next = file.readline()
-                email = re.search(r"(\w*\..*.mil)", line)
+                email = re.search(r"(\w*\..*.mil)", line, re.IGNORECASE)
             if email:
                 # print('found email in line: ' + line)
                 SENIOR_EMAIL = email.group(1).replace(' ', '')
@@ -377,14 +377,15 @@ def get_phys_fitness_tx_broadening_operational(file, fields):
                 # print('=====found broadening')
                 temp = file.readline()
                 print('temp1: ' + temp)
-                BRDING = re.search(r"\w.*; \w.*; \w.*", temp).group()
-                fields['BRDING'] = BRDING
+                BRDING_match = re.search(r"\w.*;|, \w.*;|, \w.*", temp)
+                if BRDING_match:
+                    fields['BRDING'] = BRDING_match.group()
                 temp = file.readline()
                 # print('temp2: ' + temp)
                 if 'OPERATIONAL' in temp:
                     # print('=====found operational')
                     temp = file.readline()
-                    OPERAT = re.search(r"\w.*; \w.*; \w.*", temp).group()
+                    OPERAT = re.search(r"\w.*;|, \w.*;|, \w.*", temp).group()
                     fields['OPERAT'] = OPERAT
             if not PHYS_FITNESS_TX == "":
                 fields['PHYS_FITNESS_TX'] = PHYS_FITNESS_TX

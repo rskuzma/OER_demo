@@ -32,11 +32,13 @@ def get_eval_id(file, fields):
 def get_name_id_rank_date_of_rank(file, fields):
     print('get_ind_name')
     for line in file:
-        t = re.search(r"(\(YYYYMMDD\).+)(\(Status Code\))", line)
+        # print(line)
+        t = re.search(r"(\(YYYYMMDD\).+?)(\(Status Code\))", line)
         # t = re.search(r"(\(YYYYMMDD\).+)", line)
         if t:
             temp = file.readline()
-            all = re.search(r"(\d{10}|\d{9}) (\w\w\w?\w?) (\d{8}) (\w\w)", temp)
+            # print(temp)
+            all = re.search(r"(\d{10}|\d{9}|\d{3}-\d{2}-\d{4}) (\w\w\w?\w?) (\d{8}) (\w\w)", temp)
             # print('found line: ' + temp)
 
             IND_NM = temp[:all.start()-1]
@@ -76,10 +78,10 @@ def get_unit_uic_reason(file, fields):
     return fields
 
 def get_times_months_enclosures_email(file, fields):
-    print('get_times')
+    print('=======get_times')
     for line in file:
-        # print(line)
-        t = re.search(r"THRU\(YYYYMMDD\)", line)
+        print(line)
+        t = re.search(r"THRU *\(YYYYMMDD\)", line)
         if t:
             # print('found t. line: ' + line)
             temp = file.readline()
@@ -87,7 +89,7 @@ def get_times_months_enclosures_email(file, fields):
             while temp == '\n':
                 temp = file.readline()
             # temp = file.readline()
-            # print('temp: ' + temp)
+            print('=====temp: ' + temp)
             # print('temp ' + temp)
             all = re.search(r"(\d{8}) (\d{8})", temp)
             EVAL_PD_ST_DT = all.group(1)
@@ -119,11 +121,14 @@ def get_times_months_enclosures_email(file, fields):
                 # if not blank string
                 fields['EVAL_RPT_TYP_CD'] = NON_RATED_CODES
             break
+        if "AUTHETNICATION" in line:
+            break
     return fields
 
 def get_rater_info1(file, fields):
     print('get_rater_info1')
     for line in file:
+        # print(line)
         t = re.search(r"a3.\W*RANK\W*a4.\WPOSITION", line)
         # for i in range(0, 5):
         #     temp = file.readline()
@@ -131,12 +136,12 @@ def get_rater_info1(file, fields):
         # break
         if t:
             temp = file.readline()
-            right_line = re.search(r"\d{9}|\d{10}", temp)
+            right_line = re.search(r"\d{9}|\d{10}|\d{3}-\d{2}-\d{4}", temp)
             while right_line == None:
                 # print('temp == None so read again...')
                 temp = file.readline()
                 # print('new temp: ' + temp)
-                right_line = re.search(r"\d{9}|\d{10}", temp)
+                right_line = re.search(r"\d{9}|\d{10}|\d{3}-\d{2}-\d{4}", temp)
 
             # print('temp reads: ' + temp)
             split1 = re.search(r"\d", temp)
@@ -154,7 +159,7 @@ def get_rater_info1(file, fields):
 def get_rater_email(file, fields):
     print('get_rater_info')
     for line in file:
-        t = re.search(r"RATER SIGNATURE a", line)
+        t = re.search(r" ?SIGNATURE a", line)
         # print('found target' + line)
 
         if t:
@@ -186,12 +191,12 @@ def get_senior_rater_info1(file, fields):
         if t:
             temp = file.readline()
             # print('temp: ' + temp)
-            SENIOR_RATER_ID_match = re.search(r"\d{10}|\d{9}", temp)
+            SENIOR_RATER_ID_match = re.search(r"\d{9}|\d{10}|\d{3}-\d{2}-\d{4}", temp)
             while SENIOR_RATER_ID_match == None:
                 # print('not right line. reading temp again...')
                 temp = file.readline()
                 # print('new temp: ' + temp)
-                SENIOR_RATER_ID_match = re.search(r"\d{10}|\d{9}", temp)
+                SENIOR_RATER_ID_match = re.search(r"\d{9}|\d{10}|\d{3}-\d{2}-\d{4}", temp)
                 if 'SENIOR RATER\'S ORGANIZATION' in temp:
                     print('cannot find senior rater info')
                     break
@@ -213,8 +218,14 @@ def get_senior_rater_info1(file, fields):
 def get_senior_rater_info2(file, fields):
     print('get_senior_rater_org and stuff...')
     for line in file:
-        # print(line)
-        t = re.search(r"(.*) (..) (USAR|RA)", line)
+        print(line)
+        if "ORGANIZATION" in line:
+            line = file.readline()
+
+        if "NONE" in line:
+            t = re.search(r"(.*) (NONE)", line)
+        else:
+            t = re.search(r"(.*) (..) (USAR|RA)", line)
         if t:
             SENIOR_ORG = t.group(1)
             SENIOR_BRNCH = t.group(2)
@@ -231,6 +242,8 @@ def get_senior_rater_info2(file, fields):
                 SENIOR_EMAIL = email.group(1).replace(' ', '')
                 # print('senior email: ' + SENIOR_EMAIL)
                 fields['SENIOR_EMAIL'] = SENIOR_EMAIL
+        if "PHONE NUMBER" in line:
+            break
 
             break
     return fields
