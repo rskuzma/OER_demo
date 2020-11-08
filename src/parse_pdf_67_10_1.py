@@ -312,7 +312,7 @@ def get_height_weight_within_standard(file, fields):
     for line in file:
         print(line)
         if 'APFT Pass' in line:
-            print('hit APFT pass')
+            # print('hit APFT pass')
             result_end = re.search(r"Profile:", line).end()
             date_start = re.search(r"Date:", line).start()
             apft = re.search(r"\w+", line[result_end:date_start])
@@ -344,7 +344,7 @@ def get_height_weight_within_standard(file, fields):
             fields['BODY_FAT_STD_CD'] = BODY_FAT_STD_CD
 
         elif '\"Profile\"' in line:
-            print('hit profile part')
+            # print('hit profile part')
             next = file.readline()
             # if 'Performance is Rated' in next:
             #     break
@@ -353,7 +353,7 @@ def get_height_weight_within_standard(file, fields):
             if 'Performance is Rated' in next:
                 break
             PHYS_FITNESS_TX = next.replace('\n', '')
-            print('fitness text: ' + PHYS_FITNESS_TX)
+            # print('fitness text: ' + PHYS_FITNESS_TX)
             fields['PHYS_FITNESS_TX'] = PHYS_FITNESS_TX
             break
         elif 'Performance is Rated' in next:
@@ -401,16 +401,21 @@ def get_rt_comments(file, fields):
     print('get_rt_comments')
     RT_CMT = ''
     for line in file:
-        print('line in file: ' + line)
+        # print('line in file: ' + line)
         if 'Comments:' in line:
-            print('line: ' + line)
+            # print('======comments line: ' + line)
             next = file.readline()
+            # print('========next: '+ next)
             # print('next: ' + next)
             while next.isspace():
                 # print('while next.isspace()')
                 next = file.readline()
             count = 0
-            while not 'FORM' or 'UNCLASSIFIED' in next:
+            # print('new next...'+next)
+            while not 'FORM' in next:
+                if 'Page ?1' in next:
+                    break
+                # print('========while====')
                 if count == 5:
                     print('hard count == 5')
                     break
@@ -419,27 +424,35 @@ def get_rt_comments(file, fields):
                 RT_CMT = RT_CMT + next.replace('\n', ' ')
                 # print('RT_CMT: ' + RT_CMT)
                 next = file.readline()
+
+                # print('=====new next: '+next)
                 count +=1
+
 
             fields['RT_CMT'] = RT_CMT
             break
+        # if 'FORM' in line or 'Page' in line or 'UNCLASSIFIED' in line:
+        #     break
     return fields
 
 def get_sr_rating(file, fields):
     print('get_sr_rating')
     for line in file:
+        # print(line)
         if 'OFFICERS SENIOR RATED' in line:
-            # print('line: ' + line)
             next = file.readline()
             potentials = ['MOST QUALIFIED', 'HIGHLY QUALIFIED', 'QUALIFIED', 'NOT QUALIFIED']
             while not any(potential in next for potential in potentials):
                 next = file.readline()
-                if 'SUCCESSIVE' in next.upper():
-                    break
+                if 'RO:' in next:
+                    return fields
             # print('next: ' + next)
-            SR_RATING = re.search(r"\w.*", next).group()
-            fields['SR_RATING'] = SR_RATING
-            break
+            if any(potential in next for potential in potentials):
+                SR_RATING = re.search(r"\w.*", next).group()
+                fields['SR_RATING'] = SR_RATING
+                break
+        if 'RO:' in line.upper():
+            return fields
     return fields
 
 def get_sr_total_and_successive_assignments(file, fields):
@@ -456,9 +469,9 @@ def get_sr_total_and_successive_assignments(file, fields):
                     break
                 # print('unclassified not in next')
                 t = re.search(r"TOTAL RATINGS: \d*", next)
-                assignments = re.search(r"(\w.*), (\w.*), (\w.*)", next)
-                if assignments:
-                    fields['SUCCSIV'] = assignments.group(0)
+                assignments_match = re.search(r".*(;|,).*(;|,).*", next)
+                if assignments_match:
+                    fields['SUCCSIV'] = assignments_match.group(0)
 
                 if t:
                     SENIOR_TOTAL = t.group().split()[-1]
@@ -513,14 +526,14 @@ def main():
 
 
     # streamlit
-    TEXT_PATH = './data/text/'
-    OUTPUT_PATH = './data/output/'
-    fields = make_dict('./data/', 'dict_keys.txt')
+    # TEXT_PATH = './data/text/'
+    # OUTPUT_PATH = './data/output/'
+    # fields = make_dict('./data/', 'dict_keys.txt')
 
     # local
-    # TEXT_PATH = '../data/text/'
-    # OUTPUT_PATH = '../data/output/'
-    # fields = make_dict('../data/', 'dict_keys.txt')
+    TEXT_PATH = '../data/text/'
+    OUTPUT_PATH = '../data/output/'
+    fields = make_dict('../data/', 'dict_keys.txt')
 
     # pp.pprint(fields, sort_dicts = False)
     print('reading: ' + txt_filename)
@@ -558,12 +571,12 @@ def main():
 
 
 
-    with open(OUTPUT_PATH+txt_name + '.json', 'w') as f:
-        json.dump(fields, f, indent=4)
-        print('saved oer data to json')
-        print('path: ' + OUTPUT_PATH)
-        print('name: ' + txt_name+'.json')
-    # pp.pprint(fields, sort_dicts = False)
+    # with open(OUTPUT_PATH+txt_name + '.json', 'w') as f:
+    #     json.dump(fields, f, indent=4)
+    #     print('saved oer data to json')
+    #     print('path: ' + OUTPUT_PATH)
+    #     print('name: ' + txt_name+'.json')
+    pp.pprint(fields, sort_dicts = False)
 
 
 
