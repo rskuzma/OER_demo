@@ -526,14 +526,14 @@ def main():
 
 
     # streamlit
-    # TEXT_PATH = './data/text/'
-    # OUTPUT_PATH = './data/output/'
-    # fields = make_dict('./data/', 'dict_keys.txt')
+    TEXT_PATH = './data/text/'
+    OUTPUT_PATH = './data/output/'
+    fields = make_dict('./data/', 'dict_keys.txt')
 
     # local
-    TEXT_PATH = '../data/text/'
-    OUTPUT_PATH = '../data/output/'
-    fields = make_dict('../data/', 'dict_keys.txt')
+    # TEXT_PATH = '../data/text/'
+    # OUTPUT_PATH = '../data/output/'
+    # fields = make_dict('../data/', 'dict_keys.txt')
 
     # pp.pprint(fields, sort_dicts = False)
     print('reading: ' + txt_filename)
@@ -571,12 +571,12 @@ def main():
 
 
 
-    # with open(OUTPUT_PATH+txt_name + '.json', 'w') as f:
-    #     json.dump(fields, f, indent=4)
-    #     print('saved oer data to json')
-    #     print('path: ' + OUTPUT_PATH)
-    #     print('name: ' + txt_name+'.json')
-    pp.pprint(fields, sort_dicts = False)
+    with open(OUTPUT_PATH+txt_name + '.json', 'w') as f:
+        json.dump(fields, f, indent=4)
+        print('saved oer data to json')
+        print('path: ' + OUTPUT_PATH)
+        print('name: ' + txt_name+'.json')
+    # pp.pprint(fields, sort_dicts = False)
 
 
 
