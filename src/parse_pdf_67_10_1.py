@@ -435,30 +435,54 @@ def get_rt_comments(file, fields):
         #     break
     return fields
 
-def get_sr_rating(file, fields):
-    print('get_sr_rating')
+def get_sr_rating_sr_cmt(file, fields):
+    print('get_sr_rating_sr_cmt')
+    hold = ""
     for line in file:
         # print(line)
         if 'OFFICERS SENIOR RATED' in line:
             next = file.readline()
+            hold += next.replace('\n', ' ')
             potentials = ['MOST QUALIFIED', 'HIGHLY QUALIFIED', 'QUALIFIED', 'NOT QUALIFIED']
             while not any(potential in next for potential in potentials):
                 next = file.readline()
+                hold += next.replace('\n', ' ')
                 if 'RO:' in next:
-                    return fields
+                    break
             # print('next: ' + next)
             if any(potential in next for potential in potentials):
                 SR_RATING = re.search(r"\w.*", next).group()
                 fields['SR_RATING'] = SR_RATING
-                break
-        if 'RO:' in line.upper():
+                # break
+
+            IGNORE = ["RATER\'S", 'PROFILE', 'AND', 'BOX', 'CHECK', 'AT', 'THE', 'TIME',
+            'THIS', 'REPORT', 'PROCESSED', 'RO:', 'SR:', 'DATE:', 'OFFICERS', 'SENIOR',
+            'RATED', 'IN', 'SAME', 'GRADE', '(OVERPRINTED', 'BY', 'DA)', 'c.', 'COMMENTS',
+            'ON', 'POTENTIAL:', 'HQDA', 'COMPARISON', 'OF', 'THE', 'SENIOR', 'MOST QUALIFIED',
+            'MOST', 'HIGHLY QUALIFIED', 'HIGHLY', 'QUALIFIED', 'NOT', 'NOT QUALIFIED']
+
+            # print('============ hold ===========')
+            # print(hold)
+            # print('============ hold list ===========')
+            hold_list = hold.split()
+            # print(hold_list)
+
+
+            # print('========= SR CMT =========')
+            SR_CMT_list = [word for word in hold_list if not word in IGNORE]
+            SR_CMT = ' '.join(SR_CMT_list)
+            fields['SR_CMT'] = SR_CMT
+            # print(SR_CMT)
+            print()
+
+        if 'RO:' in line:
             return fields
     return fields
 
 def get_sr_total_and_successive_assignments(file, fields):
     print('get_sr_total')
     for line in file:
-        print(line)
+        # print(line)
         if 'SR:' in line:
             # print('line: ' + line)
             next = file.readline()
@@ -564,7 +588,7 @@ def main():
         fields = get_rt_num_ratings(file, fields)
         fields = get_rt_comments(file, fields)
         # # ^ assumes RATER_RATED is 'Ratings this Officer'
-        fields = get_sr_rating(file, fields)
+        fields = get_sr_rating_sr_cmt(file, fields)
         fields = get_sr_total_and_successive_assignments(file, fields)
         # fields = get_sr_comments(file, fields)
         # fields = get_successive(file, fields)
