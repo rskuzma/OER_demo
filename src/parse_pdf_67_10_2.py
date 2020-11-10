@@ -481,7 +481,7 @@ def get_sr_rating_sr_cmt(file, fields):
             if any(potential in next for potential in potentials):
                 SR_RATING = re.search(r"\w.*", next).group()
                 fields['SR_RATING'] = SR_RATING
-                break
+                # break
 
             IGNORE = ["RATER\'S", 'PROFILE', 'AND', 'BOX', 'CHECK', 'AT', 'THE', 'TIME',
             'THIS', 'REPORT', 'PROCESSED', 'RO:', 'SR:', 'DATE:', 'OFFICERS', 'SENIOR',
@@ -496,13 +496,15 @@ def get_sr_rating_sr_cmt(file, fields):
             # print(hold_list)
 
 
-            # SR_CMT = (word for word in hold if not word in IGNORE)
             # print('========= SR CMT =========')
             SR_CMT_list = [word for word in hold_list if not word in IGNORE]
+            # print(SR_CMT_list)
             SR_CMT = ' '.join(SR_CMT_list)
-            fields['SR_CMT'] = SR_CMT
             # print(SR_CMT)
-            print()
+            fields['SR_CMT'] = SR_CMT
+            return fields
+            # print(SR_CMT)
+            # print()
             break
     return fields
 
